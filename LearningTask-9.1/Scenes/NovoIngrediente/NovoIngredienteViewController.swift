@@ -7,7 +7,13 @@
 
 import UIKit
 
+protocol NovoIngredienteViewControllerDelegate: AnyObject {
+    func novoIngredienteViewController(_ controller: NovoIngredienteViewController, adicionou ingrediente: Ingrediente)
+}
+
 class NovoIngredienteViewController: UIViewController {
+    
+    weak var delegate: NovoIngredienteViewControllerDelegate?
 
     typealias MensagemDeValidacao = String
     
@@ -51,7 +57,8 @@ class NovoIngredienteViewController: UIViewController {
                                       nome: nomeTextField.text!,
                                       quantidade: quantidadeTextField.text!)
                 
-        // e agora josé ?
+        delegate?.novoIngredienteViewController(self, adicionou: ingrediente)
+        self.dismiss(animated: true)
     }
     
 }

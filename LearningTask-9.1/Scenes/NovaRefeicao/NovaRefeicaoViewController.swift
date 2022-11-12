@@ -7,7 +7,13 @@
 
 import UIKit
 
+protocol NovaRefeicaoViewControllerDelegate: AnyObject {
+    func novaRefeicaoViewController(_ controller: NovaRefeicaoViewController, adicionou refeicao: Refeicao)
+}
+
 class NovaRefeicaoViewController: UIViewController {
+    
+    weak var delegate: NovaRefeicaoViewControllerDelegate?
     
     typealias MensagemDeValidacao = String
     
@@ -74,10 +80,23 @@ class NovaRefeicaoViewController: UIViewController {
         let simbolo = perfilButtons.filter({ button in
             button.tag == perfilSelecionado
         }).first!.titleLabel!.text!
+        let refeicao = Refeicao(simbolo: simbolo,
+                                titulo: tituloTextField.text!,
+                                horario: horarioTextField.text!,
+                                ingredientes: ingredientes)
         
-        // e agora josé ?
+        delegate?.novaRefeicaoViewController(self, adicionou: refeicao)
+        self.dismiss(animated: true)
     }
     
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        guard segue.identifier == "verFormIngredienteSegue" else { return }
+        
+        guard let destination = segue.destination as? NovoIngredienteViewController else {
+            fatalError("Não foi possível executar a segue: \(segue.identifier!)")
+        }
+        destination.delegate = self
+    }
 }
 
 extension NovaRefeicaoViewController: UITableViewDataSource {
@@ -95,4 +114,10 @@ extension NovaRefeicaoViewController: UITableViewDataSource {
         return celula
     }
     
+}
+
+extension NovaRefeicaoViewController: NovoIngredienteViewControllerDelegate {
+    func novoIngredienteViewController(_ controller: NovoIngredienteViewController, adicionou ingrediente: Ingrediente) {
+        ingredientes.append(ingrediente)
+    }
 }
